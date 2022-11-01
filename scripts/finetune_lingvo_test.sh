@@ -7,7 +7,7 @@ export CUDA_HOME='/usr/local/cuda'
 export TOKENIZERS_PARALLELISM=false
 
 deepspeed \
-    --include localhost:0,1,2,3 \
+    --include localhost:0,1,2,3,4,5,6,7 \
     --master_port $port \
     finetune_lingvo.py \
     --deepspeed \

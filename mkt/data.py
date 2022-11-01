@@ -12,14 +12,23 @@ def load(data_dir="/w/data/mkt", split="train", tokenizer=None, num_processes=8)
             "valid" : os.path.join(data_dir, "valid.jsonl"),
         })
 
+    def tokenizing(example):
+        example['input'] = example['input'].strip()
+        example['label'] = example['label'].strip()
+
+        sequence = example['input'] + example['label'] + '\n[EOS]\n'
+
+        num_tokens_input = len(tokenizer.encode(example['input']))
+        num_tokens_label = len(tokenizer.encode(example['label'] + '\n[EOS]\n'))
+        num_tokens_total = len(tokenizer.encode(sequence))
+
+        example = tokenizer(sequence, max_length=256, truncation=True, padding=False)
+        example['loss_mask'] = [0]*(num_tokens_total-num_tokens_label) + [1]*num_tokens_label
+
+        return example
+
     if tokenizer:
-        dataset = dataset.map(
-            lambda example: tokenizer(
-                example['input'] + example['label'],
-                max_length=256,
-                truncation=True,
-                padding="max_length",
-            ),
+        dataset = dataset.map(tokenizing,
             num_proc=num_processes,
             remove_columns=dataset.column_names,
             load_from_cache_file=True,
@@ -45,7 +54,12 @@ def prepare_for_language_modeling(tokenized_dataset, block_size=1024, num_proces
             key: list(split(sequence, block_size, drop_last=True)) 
             for key, sequence in examples.items()
         }
-        examples["labels"] = examples["input_ids"].copy()
+
+        examples["labels"] = [
+            list(map( lambda x, y: x if y else -100, input_ids, loss_mask))
+            for input_ids, loss_mask in zip(examples["input_ids"], examples["loss_mask"])
+        ]
+
         # >> examples
         # { 'attention_mask': [ [1, ..(1024).., 0], [1, ..(1024).., 0], ... ],
         #   'input_ids': [ [796, ..(1024).., 569], [18354, ..(1024).., 17740], ... ],

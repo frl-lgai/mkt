@@ -12,9 +12,9 @@ deepspeed \
     finetune_lingvo.py \
     --deepspeed \
     --deepspeed_config "deepspeed_configs/stage3.json" \
-    --model_dir "/w/exaone_2022/model_8.8B_BI_MT_02" \
+    --model_dir "/w/exaone_2022/model_1.7B_BI_MT_02" \
     --data_dir "/w/mkt/data/kobaco" \
-    --output_dir "/w/exp/mkt/model_8.8B_BI_MT_02" \
+    --output_dir "/w/exp/mkt/model_1.7B_BI_MT_02" \
     --num_epochs 20 \
     --per_device_batch_size 16 \
     --learning_rate 4e-5 \
