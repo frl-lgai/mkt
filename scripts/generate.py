@@ -3,7 +3,7 @@ import wandb
 
 from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer
 
-model_name = "/w/exp/mkt/model_1.7B_BI_MT_02/checkpoint-100"
+model_name = "/w/exp/mkt/model_1.7B_BI_MT_02/checkpoint-150"
 
 config = AutoConfig.from_pretrained(model_name)
 config.gradient_checkpointing = True

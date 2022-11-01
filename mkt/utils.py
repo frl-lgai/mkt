@@ -1,7 +1,11 @@
+import os
 import random
+from datetime import datetime
+
 import numpy as np
 import torch
 
+import wandb
 
 def seed_everything(seed=42):
     torch.manual_seed(seed)
@@ -13,3 +17,10 @@ def seed_everything(seed=42):
     random.seed(seed)
 
 
+def wandb_init(args, script_filename):
+    wandb.init(
+        project=args.project,
+        entity=args.entity,
+        name=f"{os.path.basename(script_filename)}_{args.local_rank}",
+        group=f"{args.group}_{datetime.now().strftime('%Y-%m-%d %H:%M')}",
+    )

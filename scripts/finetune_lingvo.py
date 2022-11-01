@@ -1,7 +1,3 @@
-import os
-from datetime import datetime
-import wandb
-
 import torch.distributed as dist
 
 #from transformers import AutoConfig, AutoModel, AutoTokenizer, GPTLingvoForCausalLM, AutoModelForCausalLM
@@ -16,7 +12,7 @@ from mkt.utils import *
 
 def main(args):
 
-    wandb.init(project=args.project, entity=args.entity, group=os.path.basename(__file__)+'-'+datetime.now().strftime('%Y-%m-%d %H:%M'))
+    wandb_init(args, __file__)
 
     train_args = TrainingArguments(
         output_dir=args.output_dir,
@@ -95,6 +91,7 @@ if __name__ == '__main__':
     parser.add_argument("--save_steps", type=int, default=100)
     parser.add_argument("--eval_steps", type=int, default=100)
 
+    parser.add_argument("--group", type=str, default='finetune-lingvo')
     parser.add_argument("--project", type=str, default='mkt')
     parser.add_argument("--entity", type=str, default='dhlee347')
 
