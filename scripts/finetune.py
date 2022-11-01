@@ -6,7 +6,7 @@ from transformers import Trainer, TrainingArguments, default_data_collator
 
 from mkt import data
 from mkt.utils import *
-
+# TO DO : need to change according to finetune_lingvo.py
 def main(
     args,
     model_name: str = "skt/kogpt2-base-v2",
@@ -47,11 +47,11 @@ def main(
     model = AutoModelForCausalLM.from_pretrained(model_name, config=config)
     model.resize_token_embeddings(len(tokenizer))
 
-    train_dataset = data.get(data_dir, split='train', tokenizer=tokenizer)
+    train_dataset = data.load(data_dir, split='train', tokenizer=tokenizer)
     train_dataset = data.prepare_for_language_modeling(train_dataset, block_size=1024, num_processes=8)
     train_dataset = train_dataset.with_format('torch')
 
-    eval_dataset = data.get(data_dir, split='valid', tokenizer=tokenizer)
+    eval_dataset = data.load(data_dir, split='valid', tokenizer=tokenizer)
     eval_dataset = data.prepare_for_language_modeling(eval_dataset, block_size=1024, num_processes=8)
     eval_dataset = eval_dataset.with_format('torch')
 

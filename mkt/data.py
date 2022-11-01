@@ -4,7 +4,7 @@ import torch
 from datasets import load_dataset
 
 
-def get(data_dir="/w/data/mkt", split="train", tokenizer=None, num_processes=8):
+def load(data_dir="/w/data/mkt", split="train", tokenizer=None, num_processes=8):
     dataset = load_dataset('json', 
         split=split, 
         data_files={

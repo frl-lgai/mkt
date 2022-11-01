@@ -48,13 +48,13 @@ def main(args):
     model = AutoModelForCausalLM.from_pretrained(args.model_dir, config=config)
     model.resize_token_embeddings(len(tokenizer))
 
-    train_dataset = data.get(args.data_dir, split='train', tokenizer=tokenizer, num_processes=1)
+    train_dataset = data.load(args.data_dir, split='train', tokenizer=tokenizer, num_processes=1)
     train_dataset = data.prepare_for_language_modeling(train_dataset, block_size=1024, num_processes=1)
     train_dataset = train_dataset.with_format('torch')
 
     print(f'\n>>>> fin train_dataset {args.local_rank} <<<<\n')
 
-    eval_dataset = data.get(args.data_dir, split='valid', tokenizer=tokenizer, num_processes=1)
+    eval_dataset = data.load(args.data_dir, split='valid', tokenizer=tokenizer, num_processes=1)
     eval_dataset = data.prepare_for_language_modeling(eval_dataset, block_size=1024, num_processes=1)
     eval_dataset = eval_dataset.with_format('torch')
 
