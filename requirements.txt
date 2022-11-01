@@ -5,4 +5,5 @@ omegaconf>=2
 wandb>=0.13
 deepspeed>=0.7
 accelerate>=0.13
+tensorboard>=2.10
 # need to install lingvo_transformers from lingvo-4.23.1 branch of https://github.com/frl-lgai/lingvo-transformers
