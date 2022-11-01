@@ -1,8 +1,8 @@
 torch>=1.8
 numpy>=1.20
-icecream>=2.1
-transformers==4.13.0
 datasets>=2.6
 omegaconf>=2
 wandb>=0.13
-typer>=0.6
+deepspeed>=0.7
+accelerate>=0.13
+# need to install lingvo_transformers from lingvo-4.23.1 branch of https://github.com/frl-lgai/lingvo-transformers
