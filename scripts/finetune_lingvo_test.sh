@@ -16,7 +16,7 @@ deepspeed \
     --data_dir "/w/mkt/data/kobaco" \
     --output_dir "/w/exp/mkt/model_1.7B_BI_MT_02" \
     --num_epochs 20 \
-    --per_device_batch_size 16 \
+    --per_device_batch_size 14 \
     --learning_rate 4e-5 \
     --save_steps 50 \
     --project "mkt" \

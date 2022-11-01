@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 import wandb
 
 import torch.distributed as dist
@@ -15,7 +16,7 @@ from mkt.utils import *
 
 def main(args):
 
-    wandb.init(project=args.project, entity=args.entity, group=os.path.basename(__file__))
+    wandb.init(project=args.project, entity=args.entity, group=os.path.basename(__file__)+'-'+datetime.now().strftime('%Y-%m-%d %H:%M'))
 
     train_args = TrainingArguments(
         output_dir=args.output_dir,
@@ -26,7 +27,7 @@ def main(args):
         per_device_train_batch_size=args.per_device_batch_size,
         per_device_eval_batch_size=2,
         evaluation_strategy="steps",
-        eval_steps=50,
+        eval_steps=args.eval_steps,
         save_strategy="steps",
         save_steps=args.save_steps,
         load_best_model_at_end=True,
@@ -92,6 +93,7 @@ if __name__ == '__main__':
     parser.add_argument("--per_device_batch_size", type=int, default=8)
     parser.add_argument("--learning_rate", type=float, default=4e-5)
     parser.add_argument("--save_steps", type=int, default=100)
+    parser.add_argument("--eval_steps", type=int, default=100)
 
     parser.add_argument("--project", type=str, default='mkt')
     parser.add_argument("--entity", type=str, default='dhlee347')
