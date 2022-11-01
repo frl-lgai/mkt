@@ -1,0 +1,10 @@
+Metadata-Version: 2.1
+Name: mkt
+Version: 0.1
+Summary: Reinforcement Learning from Human (Preference) Feedback for Marketing Phrase Generation
+Home-page: https://github.com/frl-lgai/mkt
+Download-URL: https://github.com/frl-lgai/mkt/archive/0.1.tar.gz
+Author: Dong-Hyun Lee
+Author-email: dhlee347@gmail.com
+Keywords: deep learning,language model,gpt,reinforcement learning,human feedback,marketing,generation
+Requires-Python: >=3.8

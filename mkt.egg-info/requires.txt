@@ -1,0 +1,8 @@
+torch>=1.8
+numpy>=1.20
+icecream>=2.1
+transformers==4.13.0
+datasets>=2.6
+omegaconf>=2
+wandb>=0.13
+typer>=0.6
