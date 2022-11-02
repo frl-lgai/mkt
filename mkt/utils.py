@@ -17,7 +17,7 @@ def seed_everything(seed=42):
     random.seed(seed)
 
 
-def wandb_init(args, script_filename):
+def wandb_init_distributed(args, script_filename):
     wandb.init(
         project=args.project,
         entity=args.entity,

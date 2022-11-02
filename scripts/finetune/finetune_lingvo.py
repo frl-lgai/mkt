@@ -12,7 +12,7 @@ from mkt.utils import *
 
 def main(args):
 
-    wandb_init(args, __file__)
+    wandb_init_distributed(args, __file__)
 
     train_args = TrainingArguments(
         output_dir=args.output_dir,

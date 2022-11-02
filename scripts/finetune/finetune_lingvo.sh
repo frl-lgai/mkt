@@ -11,7 +11,7 @@ deepspeed \
     --master_port $port \
     finetune_lingvo.py \
     --deepspeed \
-    --deepspeed_config "deepspeed_configs/stage3.json" \
+    --deepspeed_config "../configs/stage3.json" \
     --model_dir "/w/exaone_2022/model_8.8B_BI_MT_02" \
     --data_dir "/w/mkt/data/kobaco" \
     --output_dir "/w/exp/mkt/model_8.8B_BI_MT_02-5th" \
