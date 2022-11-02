@@ -28,9 +28,10 @@ def load(data_dir="/w/data/mkt", split="train", tokenizer=None, num_processes=8)
         return example
 
     if tokenizer:
-        dataset = dataset.map(tokenizing,
-            num_proc=num_processes,
+        dataset = dataset.map(
+            tokenizing,
             remove_columns=dataset.column_names,
+            num_proc=num_processes,
             load_from_cache_file=True,
         )
 
@@ -74,6 +75,7 @@ def prepare_for_language_modeling(tokenized_dataset, block_size=1024, num_proces
     return tokenized_dataset.map(
         grouping,
         batched=True,
+        remove_columns=['loss_mask'],
         num_proc=num_processes,
         load_from_cache_file=True,
     )
