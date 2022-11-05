@@ -66,6 +66,8 @@ def prepare_for_language_modeling(tokenized_dataset, block_size=1024, num_proces
         #   'input_ids': [ [796, ..(1024).., 569], [18354, ..(1024).., 17740], ... ],
         #   'labels': [ [796, ..(1024).., 569], [18354, ..(1024).., 17740], ... ] }
 
+        #del examples["loss_mask"]
+
         return examples
 
     # >> dataset['train'][1]
