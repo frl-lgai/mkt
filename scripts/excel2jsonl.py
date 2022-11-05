@@ -10,6 +10,8 @@ def prompting(*row):
         cell = str(row[index].value) if row[index].value else ""
         return cell.strip() if cell else ""
 
+    if not (p(0) or p(1) or p(2) or p(3)): return None
+
     return \
 f"""다음의 상품을 홍보하는 창의적인 마케팅 문구를 작성해 보세요.
 [회사] {p(2)}
@@ -37,6 +39,8 @@ def main(
 
         prompt = prompting(*row)
         target = row[5].value if row[5].value else ""
+
+        if prompt is None: continue
 
         example = json.dumps({"input": prompt, "label": target}, ensure_ascii=False)
 

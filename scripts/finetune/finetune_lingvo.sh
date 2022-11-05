@@ -14,12 +14,12 @@ deepspeed \
     --deepspeed_config "../configs/stage3.json" \
     --model_dir "/w/exaone_2022/model_8.8B_BI_MT_02" \
     --data_dir "/w/mkt/data/kobaco" \
-    --output_dir "/w/exp/mkt/model_8.8B_BI_MT_02-5th" \
-    --num_epochs 20 \
+    --output_dir "/w/exp/mkt/model_8.8B_BI_MT_02-7th" \
+    --num_epochs 30 \
     --per_device_batch_size 10 \
     --learning_rate 2e-5 \
     --save_steps 10 \
     --eval_steps 5 \
-    --group "8.8B_BI_MT_02-5th-lr-2e-5" \
+    --group "8.8B_BI_MT_02-7th-lr-2e-5" \
     --project "mkt" \
     --entity "dhlee347"
