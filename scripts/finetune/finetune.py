@@ -1,58 +1,36 @@
-import os
-import wandb
-
-from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer
+#from transformers import AutoConfig, AutoModel, AutoTokenizer, GPTLingvoForCausalLM, AutoModelForCausalLM
+from transformers import AutoConfig, AutoTokenizer, AutoModelForCausalLM
 from transformers import Trainer, TrainingArguments, default_data_collator
 
-from mkt import data
+import deepspeed
+
+from mkt import data, config
 from mkt.utils import *
-# TO DO : need to change according to finetune_lingvo.py
-def main(
-    args,
-    model_name: str = "skt/kogpt2-base-v2",
-    data_dir: str = "/w/mkt/data/kobaco",
-    output_dir: str = "/w/exp/mkt/skt-kogpt2",
-    num_epochs: int = 50,
-    per_device_batch_size: int = 8,
-    project: str = "mkt",
-    entity: str = "frl-lgai"
-):
-    wandb.init(name=os.path.basename(__file__), project=project, entity=entity)
 
-    train_args = TrainingArguments(
-            output_dir=output_dir,
-            num_train_epochs=num_epochs,
-            learning_rate=4e-5,
-            lr_scheduler_type="cosine",
-            warmup_ratio=0.1,
-            per_device_train_batch_size=per_device_batch_size,
-            per_device_eval_batch_size=per_device_batch_size//2,
-            evaluation_strategy="steps",
-            eval_steps=50,
-            save_strategy="steps",
-            save_steps=100,
-            load_best_model_at_end=True,
-            logging_strategy="steps",
-            logging_steps=50,
-            report_to="wandb",
-    )
 
-    config = AutoConfig.from_pretrained(model_name)
-    config.gradient_checkpointing = True
-    config.use_cache = False
+def main(cfg):
+    
+    seed_everything(cfg.seed)
+    wandb_init_distributed(cfg, __file__)
 
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    train_args = TrainingArguments(**cfg.trainer)
+
+    model_config = AutoConfig.from_pretrained(cfg.model_dir)
+    model_config.gradient_checkpointing = True
+    model_config.use_cache = False
+
+    tokenizer = AutoTokenizer.from_pretrained(cfg.model_dir)
     tokenizer.pad_token = tokenizer.eos_token
 
-    model = AutoModelForCausalLM.from_pretrained(model_name, config=config)
+    model = AutoModelForCausalLM.from_pretrained(cfg.model_dir, config=model_config)
     model.resize_token_embeddings(len(tokenizer))
 
-    train_dataset = data.load(data_dir, split='train', tokenizer=tokenizer)
-    train_dataset = data.prepare_for_language_modeling(train_dataset, block_size=1024, num_processes=8)
+    train_dataset = data.load(cfg.data_dir, split='train', tokenizer=tokenizer, num_processes=cfg.num_processes)
+    train_dataset = data.prepare_for_language_modeling(train_dataset, block_size=cfg.max_length, num_processes=cfg.num_processes)
     train_dataset = train_dataset.with_format('torch')
 
-    eval_dataset = data.load(data_dir, split='valid', tokenizer=tokenizer)
-    eval_dataset = data.prepare_for_language_modeling(eval_dataset, block_size=1024, num_processes=8)
+    eval_dataset = data.load(cfg.data_dir, split='valid', tokenizer=tokenizer, num_processes=cfg.num_processes)
+    eval_dataset = data.prepare_for_language_modeling(eval_dataset, block_size=cfg.max_length, num_processes=cfg.num_processes)
     eval_dataset = eval_dataset.with_format('torch')
 
     trainer = Trainer(
@@ -72,5 +50,16 @@ def main(
 
 
 if __name__ == '__main__':
-    seed_everything(42)
-    main(args=None)
+    
+    import argparse
+   
+    parser = argparse.ArgumentParser(description="finetune_lingvo")
+    parser.add_argument("--local_rank", type=int, default=0, help="local_rank for distributed training on gpus")
+    parser.add_argument("--config", type=str, default="../configs/finetune_lingvo_1.7B.yaml")    
+    parser = deepspeed.add_config_arguments(parser)
+    args = parser.parse_args()
+    
+    cfg = config.load(args.config, config.FinetuneConfig)
+    cfg.local_rank = args.local_rank
+    
+    main(cfg)

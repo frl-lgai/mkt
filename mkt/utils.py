@@ -17,10 +17,10 @@ def seed_everything(seed=42):
     random.seed(seed)
 
 
-def wandb_init_distributed(args, script_filename):
+def wandb_init_distributed(cfg, script_filename):
     wandb.init(
-        project=args.project,
-        entity=args.entity,
-        name=f"{os.path.basename(script_filename)}_{args.local_rank}",
-        group=f"{args.group}_{datetime.now().strftime('%Y-%m-%d %H:%M')}",
+        project=cfg.wandb.project,
+        entity=cfg.wandb.entity,
+        name=f"{os.path.basename(script_filename)}_{cfg.local_rank}",
+        group=f"{cfg.wandb.group}_{datetime.now().strftime('%Y-%m-%d %H:%M')}",
     )
