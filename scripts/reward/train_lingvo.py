@@ -46,7 +46,7 @@ class DataCollatorWithPadding:
         neg = {f'{k}_neg': neg[k] for k in neg}
 
         return {**pos, **neg}
-        
+
 
 def GPTForRewardModel(model_name_or_path):
     config = AutoConfig.from_pretrained(model_name_or_path)

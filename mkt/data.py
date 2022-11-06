@@ -11,6 +11,8 @@ def load(data_dir="/w/data/mkt", split="train", tokenizer=None, num_processes=8)
             "train" : os.path.join(data_dir, "train.jsonl"),
             "valid" : os.path.join(data_dir, "valid.jsonl"),
         })
+    
+    dataset = dataset.shuffle(seed=42)
 
     def tokenizing(example):
         example['input'] = example['input'].strip()

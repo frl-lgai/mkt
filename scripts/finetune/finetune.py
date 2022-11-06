@@ -10,12 +10,12 @@ from mkt.utils import *
 def main(
     args,
     model_name: str = "skt/kogpt2-base-v2",
-    data_dir: str = "/w/data/mkt",
-    output_dir: str = "/w/exp/mkt",
-    num_epochs: int = 10,
+    data_dir: str = "/w/mkt/data/kobaco",
+    output_dir: str = "/w/exp/mkt/skt-kogpt2",
+    num_epochs: int = 50,
     per_device_batch_size: int = 8,
     project: str = "mkt",
-    entity: str = "dhlee347"
+    entity: str = "frl-lgai"
 ):
     wandb.init(name=os.path.basename(__file__), project=project, entity=entity)
 
@@ -37,9 +37,9 @@ def main(
             report_to="wandb",
     )
 
-    config    = AutoConfig.from_pretrained(model_name)
-    # config.gradient_checkpointing = True
-    # config.use_cache              = False
+    config = AutoConfig.from_pretrained(model_name)
+    config.gradient_checkpointing = True
+    config.use_cache = False
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     tokenizer.pad_token = tokenizer.eos_token

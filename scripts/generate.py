@@ -9,7 +9,7 @@ import deepspeed
 
 
 
-with open("/w/mkt/data/kobaco/valid.jsonl", "r") as f:
+with open("/w/mkt/data/kobaco/train.jsonl", "r") as f:
     data = [json.loads(line) for line in f]
 
 
@@ -50,13 +50,10 @@ with open(f"/w/exp/mkt/generated/gen_{local_rank}.jsonl", "w") as fw:
         prompts_tensor = tokenizer(prompts, padding="longest", return_tensors='pt').to(model.device)
         tokenizer.padding_side = 'right'
 
-        temp = random()*2.0
-
         gen_ids_batch = ds_model.generate(**prompts_tensor,
             max_length=256,
-            repetition_penalty=2.0,
             do_sample=True,
-            temperature=temp,
+            temperature=1.0,
             pad_token_id=tokenizer.pad_token_id,
             eos_token_id=tokenizer.eos_token_id,
             bos_token_id=tokenizer.bos_token_id,
@@ -68,13 +65,13 @@ with open(f"/w/exp/mkt/generated/gen_{local_rank}.jsonl", "w") as fw:
             label = generated[start_index:].replace("[EOS]", "").strip()
             return label
 
-        labels = [get_label(gen_ids) for gen_ids in gen_ids_batch]
+        generated_labels = [get_label(gen_ids) for gen_ids in gen_ids_batch]
 
         fw.write(json.dumps({
             "input": input,
-            "labels": labels,
+            "generated_labels": generated_labels,
+            "groundtruth_labels": example['label'],
             "model": "/w/exp/mkt/model_8.8B_BI_MT_02-4th/checkpoint-20",
-            "temperature": temp,
         }, ensure_ascii=False)+"\n")
 
 
