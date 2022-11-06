@@ -5,6 +5,7 @@ base_dir=`pwd`
 
 export CUDA_HOME='/usr/local/cuda'
 export TOKENIZERS_PARALLELISM=false
+export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 
 deepspeed \
     --include localhost:1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 \
