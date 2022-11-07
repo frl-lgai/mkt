@@ -28,7 +28,7 @@ trainer:
   logging_steps: 10
   
   report_to: wandb  
-  deepspeed: ../configs/stage3.json
+  deepspeed: configs/stage3.json
 
 wandb:
   group: finetune-lingvo
