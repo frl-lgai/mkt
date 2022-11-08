@@ -1,6 +1,6 @@
 seed: 42
 model_name_or_path: /w/exaone_2022/model_8.8B_BI_MT_02
-data_dir: /w/data/mkt
+data_dir: /w/data/mkt/kobaco
 max_length: 1024
 num_proc: 1
 eos_token: [EOS]

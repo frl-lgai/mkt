@@ -15,14 +15,14 @@ def main(cfg):
 
     train_args = TrainingArguments(**cfg.trainer)
 
-    model_config = AutoConfig.from_pretrained(cfg.model_dir)
+    model_config = AutoConfig.from_pretrained(cfg.model_name_or_path)
     model_config.gradient_checkpointing = True
     model_config.use_cache = False
 
-    tokenizer = AutoTokenizer.from_pretrained(cfg.model_dir)
+    tokenizer = AutoTokenizer.from_pretrained(cfg.model_name_or_path)
     tokenizer.pad_token = tokenizer.eos_token
 
-    model = AutoModelForCausalLM.from_pretrained(cfg.model_dir, config=model_config)
+    model = AutoModelForCausalLM.from_pretrained(cfg.model_name_or_path, config=model_config)
     model.resize_token_embeddings(len(tokenizer))
 
     dataset = data.load(cfg.data_dir, tokenizer=tokenizer, num_proc=cfg.num_proc, eos_token=cfg.eos_token)
