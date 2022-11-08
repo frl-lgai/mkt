@@ -58,6 +58,7 @@ def main(cfg):
         tokenizer=tokenizer,
         train_dataset=dataset['train'],
         eval_dataset=dataset['valid'],
+        data_collator=DataCollatorWithPadding(tokenizer=tokenizer),
         #data_collator=lambda x: padding_for_comparisons(x, tokenizer),
         args=train_args
     )
