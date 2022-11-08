@@ -31,8 +31,8 @@ print(f"Total number of comparisons : {len(comparisons)}")
 
 random.shuffle(comparisons)
 
-with open('/w/mkt/data/kobaco/comparisons2_train.jsonl', 'w') as f_train:
-    with open('/w/mkt/data/kobaco/comparisons2_valid.jsonl', 'w') as f_valid:
+with open('/w/mkt/data/kobaco/comparisons/comparisons_train.jsonl', 'w') as f_train:
+    with open('/w/mkt/data/kobaco/comparisons/comparisons_valid.jsonl', 'w') as f_valid:
 
         for i, comparison in enumerate(comparisons):
             if i < 6000:
