@@ -25,12 +25,12 @@ def main(cfg):
     model = AutoModelForCausalLM.from_pretrained(cfg.model_dir, config=model_config)
     model.resize_token_embeddings(len(tokenizer))
 
-    train_dataset = data.load(cfg.data_dir, split='train', tokenizer=tokenizer, num_processes=cfg.num_processes)
-    train_dataset = data.prepare_for_language_modeling(train_dataset, block_size=cfg.max_length, num_processes=cfg.num_processes)
+    train_dataset = data.load(cfg.data_dir, split='train', tokenizer=tokenizer, num_proc=cfg.num_proc)
+    train_dataset = data.prepare_for_language_modeling(train_dataset, block_size=cfg.max_length, num_proc=cfg.num_proc)
     train_dataset = train_dataset.with_format('torch')
 
-    eval_dataset = data.load(cfg.data_dir, split='valid', tokenizer=tokenizer, num_processes=cfg.num_processes)
-    eval_dataset = data.prepare_for_language_modeling(eval_dataset, block_size=cfg.max_length, num_processes=cfg.num_processes)
+    eval_dataset = data.load(cfg.data_dir, split='valid', tokenizer=tokenizer, num_proc=cfg.num_proc)
+    eval_dataset = data.prepare_for_language_modeling(eval_dataset, block_size=cfg.max_length, num_proc=cfg.num_proc)
     eval_dataset = eval_dataset.with_format('torch')
 
     trainer = Trainer(

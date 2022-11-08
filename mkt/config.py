@@ -70,7 +70,7 @@ class FinetuneConfig:
     model_dir: str = "/w/exaone_2022/model_1.7B_BI_MT_02"
     data_dir: str = "/w/data/mkt"
     max_length: int = 1024
-    num_processes: int = 1
+    num_proc: int = 1
     
     trainer: HFTrainingArguments = MISSING
     wandb: WandbConfig = MISSING

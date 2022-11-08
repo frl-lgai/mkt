@@ -1,11 +1,11 @@
 seed: 42
-model_dir: /w/exaone_2022/model_8.8B_BI_MT_02
+model_dir: /w/exaone_2022/model_1.7B_BI_MT_02
 data_dir: /w/data/mkt
 max_length: 1024
 num_proc: 1
 
 trainer:
-  output_dir: /w/exp/mkt/model_8.8B_BI_MT_02
+  output_dir: /w/exp/mkt/model_1.7B_BI_MT_02
   num_train_epochs: 10
   
   learning_rate: 0.00002

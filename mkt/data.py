@@ -4,7 +4,8 @@ import torch
 from datasets import load_dataset
 
 
-def load(data_dir="/w/data/mkt", split="train", tokenizer=None, num_processes=8):
+def load(data_dir="/w/data/mkt/kobaco", split="train", tokenizer=None, num_proc=8):
+
     dataset = load_dataset('json', 
         split=split, 
         data_files={
@@ -33,14 +34,14 @@ def load(data_dir="/w/data/mkt", split="train", tokenizer=None, num_processes=8)
         dataset = dataset.map(
             tokenizing,
             remove_columns=dataset.column_names,
-            num_proc=num_processes,
+            num_proc=num_proc,
             load_from_cache_file=True,
         )
 
     return dataset
 
 
-def prepare_for_language_modeling(tokenized_dataset, block_size=1024, num_processes=8):
+def prepare_for_language_modeling(tokenized_dataset, block_size=1024, num_proc=8):
 
     def grouping(examples):
         # >> examples
@@ -80,9 +81,45 @@ def prepare_for_language_modeling(tokenized_dataset, block_size=1024, num_proces
         grouping,
         batched=True,
         remove_columns=['loss_mask'],
-        num_proc=num_processes,
+        num_proc=num_proc,
         load_from_cache_file=True,
     )
+
+
+def load_feedback(data_dir="/w/mkt/data/kobaco", split="train", tokenizer=None, num_proc=8):
+
+    dataset = load_dataset('json', 
+        split=split,
+        data_files={
+            'train': os.path.join(data_dir, 'comparisons_train.jsonl'),
+            'valid': os.path.join(data_dir, 'comparisons_valid.jsonl'),
+        }
+    )
+
+    dataset = dataset.shuffle(seed=42)
+
+    def tokenizing(example):
+        pos_example = f"{example['input'].strip()} {example['pos_label'].strip()}[EOS]\n"
+        neg_example = f"{example['input'].strip()} {example['neg_label'].strip()}[EOS]\n"
+
+        pos_sample = tokenizer(pos_example, max_length=256, truncation=True, padding=False)
+        neg_sample = tokenizer(neg_example, max_length=256, truncation=True, padding=False)
+
+        return {
+            'input_ids': pos_sample['input_ids'],
+            'attention_mask': pos_sample['attention_mask'],
+            'input_ids_neg': neg_sample['input_ids'],
+            'attention_mask_neg': neg_sample['attention_mask'],
+        }
+
+    dataset = dataset.map(
+        tokenizing,
+        remove_columns=dataset.column_names,
+        num_proc=num_proc,
+        load_from_cache_file=True,
+    )
+
+    return dataset
 
 
 def split(inputs, size, drop_last=False, shuffle=False):
