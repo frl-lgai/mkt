@@ -26,7 +26,7 @@ def main(cfg):
     model.resize_token_embeddings(len(tokenizer))
 
     dataset = data.load(cfg.data_dir, tokenizer=tokenizer, num_proc=cfg.num_proc, eos_token=cfg.eos_token)
-    dataset = data.prepare_for_language_modeling(train_dataset, block_size=cfg.max_length, num_proc=cfg.num_proc)
+    dataset = data.prepare_for_language_modeling(dataset, block_size=cfg.max_length, num_proc=cfg.num_proc)
     dataset = dataset.with_format('torch')
 
     trainer = Trainer(
