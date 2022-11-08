@@ -2,7 +2,7 @@ import json
 import random
 import itertools
 
-with open('/w/data/mkt/Feedback-2022-11-06.json', 'r') as f:
+with open('/w/data/mkt/Feedback-2022-11-08.json', 'r') as f:
     examples = json.load(f)
 
 print(f"Total number of Examples : {len(examples)}")
@@ -31,11 +31,11 @@ print(f"Total number of comparisons : {len(comparisons)}")
 
 random.shuffle(comparisons)
 
-with open('/w/mkt/data/comparisons_train.jsonl', 'w') as f_train:
-    with open('/w/mkt/data/comparisons_valid.jsonl', 'w') as f_valid:
+with open('/w/mkt/data/kobaco/comparisons2_train.jsonl', 'w') as f_train:
+    with open('/w/mkt/data/kobaco/comparisons2_valid.jsonl', 'w') as f_valid:
 
         for i, comparison in enumerate(comparisons):
-            if i < 2000:
+            if i < 6000:
                 f_valid.write(json.dumps(comparison, ensure_ascii=False)+"\n")
             else:
                 f_train.write(json.dumps(comparison, ensure_ascii=False)+"\n")

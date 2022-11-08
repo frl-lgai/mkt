@@ -3,8 +3,7 @@ from collections.abc import Iterable, Mapping
 import torch
 from datasets import load_dataset
 
-
-def load(data_dir="/w/data/mkt/kobaco", split="train", tokenizer=None, num_proc=8):
+def load(data_dir="/w/data/mkt/kobaco", split=None, tokenizer=None, num_proc=8, eos_token="[EOS]"):
 
     dataset = load_dataset('json', 
         split=split, 
@@ -12,17 +11,17 @@ def load(data_dir="/w/data/mkt/kobaco", split="train", tokenizer=None, num_proc=
             "train" : os.path.join(data_dir, "train.jsonl"),
             "valid" : os.path.join(data_dir, "valid.jsonl"),
         })
-    
+
     dataset = dataset.shuffle(seed=42)
 
     def tokenizing(example):
         example['input'] = example['input'].strip()
         example['label'] = example['label'].strip()
 
-        sequence = example['input'] + example['label'] + '\n[EOS]\n'
+        sequence = example['input'] + example['label'] + f"\n{eos_token}\n"
 
         num_tokens_input = len(tokenizer.encode(example['input']))
-        num_tokens_label = len(tokenizer.encode(example['label'] + '\n[EOS]\n'))
+        num_tokens_label = len(tokenizer.encode(example['label'] + f"\n{eos_token}\n"))
         num_tokens_total = len(tokenizer.encode(sequence))
 
         example = tokenizer(sequence, max_length=256, truncation=True, padding=False)
@@ -86,9 +85,9 @@ def prepare_for_language_modeling(tokenized_dataset, block_size=1024, num_proc=8
     )
 
 
-def load_feedback(data_dir="/w/mkt/data/kobaco", split="train", tokenizer=None, num_proc=8):
+def load_feedback(data_dir="/w/mkt/data/kobaco", split=None, tokenizer=None, num_proc=8):
 
-    dataset = load_dataset('json', 
+    dataset = load_dataset('json',
         split=split,
         data_files={
             'train': os.path.join(data_dir, 'comparisons_train.jsonl'),
@@ -114,7 +113,7 @@ def load_feedback(data_dir="/w/mkt/data/kobaco", split="train", tokenizer=None, 
 
     dataset = dataset.map(
         tokenizing,
-        remove_columns=dataset.column_names,
+        #remove_columns=dataset.column_names,
         num_proc=num_proc,
         load_from_cache_file=True,
     )

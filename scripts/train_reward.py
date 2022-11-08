@@ -3,7 +3,6 @@ from dataclasses import dataclass
 
 from transformers import AutoConfig, AutoTokenizer
 from transformers import Trainer, TrainingArguments, default_data_collator
-from tokenizer import PreTrainedTokenizerBase
 
 import deepspeed
 
@@ -11,18 +10,24 @@ import deepspeed
 #from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 
 from mkt import data, config
-from mkt.models import AutoModelForRewardModel
+from mkt.models.reward import AutoModelForRewardModel
 from mkt.utils import *
 
 
 def padding_for_comparisons(batch, tokenizer, padding='longest'):
     pad = lambda batch: tokenizer.pad(batch, padding=padding, return_tensors='pt')
 
-    # [{'input_ids': [1,3,4]}, {...}] -> {'input_ids': tensor[[1,3,4], [...]]}
-    batch = default_data_collator(batch) 
-    batch_neg = {'input_ids': batch['input_ids_neg'], 'attention_mask': batch['attention_mask_neg'],}
 
-    return {**pad(batch), **pad(batch_neg)}
+    batch_neg = [{
+        'input_ids':      e['input_ids_neg'],
+        'attention_mask': e['attention_mask_neg'],
+    } for e in batch]
+
+    batch, batch_neg = pad(batch), pad(batch_neg)
+    batch['input_ids_neg'] = batch_neg['input_ids']
+    batch['attention_mask_neg'] = batch_neg['attention_mask']
+
+    return batch
 
 
 def main(cfg):
@@ -43,18 +48,17 @@ def main(cfg):
     #model.config.pad_token_id = model.config.eos_token_id
     model.resize_token_embeddings(len(tokenizer))
 
-    train_dataset = data.load_feedback(cfg.data_dir, split='train', tokenizer=tokenizer, num_proc=cfg.num_proc)
-    train_dataset = train_dataset.with_format('torch')
+    dataset = data.load_feedback(cfg.data_dir, tokenizer=tokenizer, num_proc=cfg.num_proc)
+    dataset = dataset.with_format('torch')
 
-    eval_dataset = data.load_feedback(cfg.data_dir, split='valid', tokenizer=tokenizer, num_proc=cfg.num_proc)
-    eval_dataset = eval_dataset.with_format('torch')
+    #import ipdb; ipdb.set_trace()
 
     trainer = Trainer(
         model=model,
         tokenizer=tokenizer,
-        train_dataset=train_dataset,
-        eval_dataset=eval_dataset,
-        data_collator=lambda x: padding_for_comparisons(x, tokenizer),
+        train_dataset=dataset['train'],
+        eval_dataset=dataset['valid'],
+        #data_collator=lambda x: padding_for_comparisons(x, tokenizer),
         args=train_args
     )
 
@@ -63,7 +67,7 @@ def main(cfg):
     trainer.save_model()
 
     metrics = train_result.metrics
-    metrics["train_samples"] = len(dataset['train'])
+    #metrics["train_samples"] = len(dataset['train'])
 
     trainer.log_metrics("train", metrics)
     trainer.save_metrics("train", metrics)

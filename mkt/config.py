@@ -67,10 +67,12 @@ class WandbConfig:
 @dataclass
 class FinetuneConfig:
     seed: int = 42
-    model_dir: str = "/w/exaone_2022/model_1.7B_BI_MT_02"
+    model_name_or_path: str = "/w/exaone_2022/model_1.7B_BI_MT_02"
     data_dir: str = "/w/data/mkt"
     max_length: int = 1024
-    num_proc: int = 1
+    num_proc: int = 1 # number of processes in data processing
+    eos_token: str = "[EOS]" # eos token for prompting
+
     
     trainer: HFTrainingArguments = MISSING
     wandb: WandbConfig = MISSING

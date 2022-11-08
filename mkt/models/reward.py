@@ -2,9 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from transformers import (
-    GPT2ForSequenceClassification, GPTLingvoForSequenceClassification, AutoModelForSequenceClassification
-)
+from transformers import GPT2ForSequenceClassification, AutoModelForSequenceClassification
+from transformers.models.gpt_lingvo import GPTLingvoForSequenceClassification
 from transformers.modeling_outputs import SequenceClassifierOutputWithPast
 
 
