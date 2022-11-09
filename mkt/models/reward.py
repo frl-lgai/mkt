@@ -7,15 +7,6 @@ from transformers.models.gpt_lingvo import GPTLingvoForSequenceClassification
 from transformers.modeling_outputs import SequenceClassifierOutputWithPast
 
 
-class AutoModelForRewardModel(AutoModelForSequenceClassification):
-    @classmethod
-    def from_pretained(model_name_or_path, config):
-        if config.model_type == "gpt2":
-            return GPT2ForRewardModel.from_pretrained(model_name_or_path, config=config)
-        elif config.model_type == "gpt_lingvo":
-            return GPTLingvoForRewardModel.from_pretrained(model_name_or_path, config=config)
-        else:
-            raise Exception("Now \'gpt2\' and \'gpt_lingvo\' in config.model_type are only supported.")
 
 
 class GPT2ForRewardModel(GPT2ForSequenceClassification):
@@ -124,3 +115,18 @@ class GPTLingvoForRewardModel(GPTLingvoForSequenceClassification):
             attentions=outputs_pos.attentions,
         )
 
+
+class AutoModelForRewardModel(AutoModelForSequenceClassification):
+    _model_mapping = {
+        "gpt2": GPT2ForRewardModel,
+        "gpt_lingvo": GPTLingvoForRewardModel,
+    }
+
+    @classmethod
+    def from_pretrained(cls, model_name_or_path, config):
+
+        if config.model_type not in cls._model_mapping:
+            raise Exception("Now \'gpt2\' and \'gpt_lingvo\' in config.model_type are only supported.")
+        
+        model_class = cls._model_mapping[config.model_type]
+        return model_class.from_pretrained(model_name_or_path, config=config)

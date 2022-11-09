@@ -105,9 +105,9 @@ def load_feedback(data_dir="/w/mkt/data/kobaco", split=None, tokenizer=None, num
         neg_sample = tokenizer(neg_example, max_length=256, truncation=True, padding=False)
 
         return {
-            'input_ids': pos_sample['input_ids'],
-            'attention_mask': pos_sample['attention_mask'],
-            'input_ids_neg': neg_sample['input_ids'],
+            'input_ids':          pos_sample['input_ids'],
+            'attention_mask':     pos_sample['attention_mask'],
+            'input_ids_neg':      neg_sample['input_ids'],
             'attention_mask_neg': neg_sample['attention_mask'],
         }
 

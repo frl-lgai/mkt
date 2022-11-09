@@ -17,13 +17,16 @@ from mkt.utils import *
 def padding_for_comparisons(batch, tokenizer, padding='longest'):
     pad = lambda batch: tokenizer.pad(batch, padding=padding, return_tensors='pt')
 
-
-    batch_neg = [{
+    batch_neg = pad([{
         'input_ids':      e['input_ids_neg'],
         'attention_mask': e['attention_mask_neg'],
-    } for e in batch]
+    } for e in batch])
+    
+    batch = pad([{
+        'input_ids':      e['input_ids'],
+        'attention_mask': e['attention_mask'],
+    } for e in batch])
 
-    batch, batch_neg = pad(batch), pad(batch_neg)
     batch['input_ids_neg'] = batch_neg['input_ids']
     batch['attention_mask_neg'] = batch_neg['attention_mask']
 
@@ -37,29 +40,26 @@ def main(cfg):
 
     train_args = TrainingArguments(**cfg.trainer)
 
-    model_config = AutoConfig.from_pretrained(cfg.model_dir)
+    model_config = AutoConfig.from_pretrained(cfg.model_name_or_path)
     model_config.gradient_checkpointing = True
     model_config.use_cache = False
 
-    tokenizer = AutoTokenizer.from_pretrained(cfg.model_dir)
+    tokenizer = AutoTokenizer.from_pretrained(cfg.model_name_or_path)
     tokenizer.pad_token = tokenizer.eos_token
 
-    model = AutoModelForRewardModel.from_pretrained(cfg.model_dir, config=model_config)
-    #model.config.pad_token_id = model.config.eos_token_id
+    model = AutoModelForRewardModel.from_pretrained(cfg.model_name_or_path, config=model_config)
+    model.config.pad_token_id = model.config.eos_token_id
     model.resize_token_embeddings(len(tokenizer))
 
     dataset = data.load_feedback(cfg.data_dir, tokenizer=tokenizer, num_proc=cfg.num_proc)
     dataset = dataset.with_format('torch')
-
-    #import ipdb; ipdb.set_trace()
 
     trainer = Trainer(
         model=model,
         tokenizer=tokenizer,
         train_dataset=dataset['train'],
         eval_dataset=dataset['valid'],
-        data_collator=DataCollatorWithPadding(tokenizer=tokenizer),
-        #data_collator=lambda x: padding_for_comparisons(x, tokenizer),
+        data_collator=lambda x: padding_for_comparisons(x, tokenizer),
         args=train_args
     )
 
@@ -67,11 +67,8 @@ def main(cfg):
     train_result = trainer.train()
     trainer.save_model()
 
-    metrics = train_result.metrics
-    #metrics["train_samples"] = len(dataset['train'])
-
-    trainer.log_metrics("train", metrics)
-    trainer.save_metrics("train", metrics)
+    trainer.log_metrics("train", train_result.metrics)
+    trainer.save_metrics("train", train_result.metrics)
     trainer.save_state()
 
 
