@@ -6,9 +6,6 @@ from transformers import Trainer, TrainingArguments, default_data_collator
 
 import deepspeed
 
-#from transformers import AutoConfig, AutoTokenizer, DataCollatorWithPadding
-#from transformers.tokenization_utils_base import PreTrainedTokenizerBase
-
 from mkt import data, config
 from mkt.models.reward import AutoModelForRewardModel
 from mkt.utils import *

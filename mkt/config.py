@@ -73,7 +73,6 @@ class FinetuneConfig:
     num_proc: int = 1 # number of processes in data processing
     eos_token: str = "[EOS]" # eos token for prompting
 
-    
     trainer: HFTrainingArguments = MISSING
     wandb: WandbConfig = MISSING
 
