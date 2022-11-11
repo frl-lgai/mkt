@@ -2,11 +2,11 @@ from dataclasses import dataclass, field
 from typing import List, Dict, Optional
 from omegaconf import OmegaConf, MISSING
 
-# OmegaConf.clear_resolver("include")
+OmegaConf.clear_resolver("include")
 
-# OmegaConf.register_new_resolver("include", 
-#     lambda yaml_file: OmegaConf.load(yaml_file)
-# )
+OmegaConf.register_new_resolver("include", 
+    lambda yaml_file: OmegaConf.load(yaml_file)
+)
 
 def load(yaml_file, config_class=None):
     cfg = OmegaConf.load(yaml_file)
