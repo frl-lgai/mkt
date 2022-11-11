@@ -6,10 +6,10 @@ num_proc: 1
 eos_token: "[EOS]"
 
 trainer:
-  output_dir: /w/exp/mkt/model_1.7B_BI_MT_02-2nd/checkpoint-100
+  output_dir: /w/exp/mkt/reward_1.7B_BI_MT_02
   num_train_epochs: 3
   
-  learning_rate: 0.0005
+  learning_rate: 0.0001
   lr_scheduler_type: cosine
   warmup_ratio: 0.1
   
@@ -24,7 +24,7 @@ trainer:
   
   load_best_model_at_end: true
   
-  logging_strategy: stepscd 
+  logging_strategy: steps
   logging_first_step: true
   logging_steps: 2
   
@@ -32,6 +32,6 @@ trainer:
   deepspeed: configs/stage3.json
 
 wandb:
-  group: reward-1.7B-5e-3-4GPUs
+  group: reward-1.7B-lr_${trainer.learning_rate}
   project: mkt
   entity: frl-lgai

@@ -1,8 +1,11 @@
 from typing import Optional, List, Dict, Any
 from dataclasses import dataclass
 
+import numpy as np
+
 from transformers import AutoConfig, AutoTokenizer
 from transformers import Trainer, TrainingArguments, default_data_collator
+from transformers import EvalPrediction
 
 import deepspeed
 
@@ -30,6 +33,11 @@ def padding_for_comparisons(batch, tokenizer, padding='longest'):
     return batch
 
 
+def compute_accuracy(eval_preds: EvalPrediction):
+    logits_pos, logits_neg = eval_preds.predictions
+    return {"accuracy": np.mean(logits_pos > logits_neg)}
+
+
 def main(cfg):
 
     seed_everything(cfg.seed)
@@ -48,7 +56,7 @@ def main(cfg):
     model.config.pad_token_id = model.config.eos_token_id
     model.resize_token_embeddings(len(tokenizer))
 
-    dataset = data.load_feedback(cfg.data_dir, tokenizer=tokenizer, num_proc=cfg.num_proc)
+    dataset = data.load_feedback(cfg.data_dir, tokenizer=tokenizer, num_pr c=cfg.num_proc)
     dataset = dataset.with_format('torch')
 
     trainer = Trainer(
@@ -57,10 +65,11 @@ def main(cfg):
         train_dataset=dataset['train'],
         eval_dataset=dataset['valid'],
         data_collator=lambda x: padding_for_comparisons(x, tokenizer),
+        compute_metrics = compute_accuracy,
         args=train_args
     )
 
-    # Train!
+    #trainer.evaluate()
     train_result = trainer.train()
     trainer.save_model()
 

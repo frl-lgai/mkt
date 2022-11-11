@@ -33,7 +33,7 @@ class RewardModelMixin:
 
         return SequenceClassifierOutputWithPast(
             loss=loss,
-            logits=outputs.logits,
+            logits=[outputs.logits, outputs_neg.logits],
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
             past_key_values=past_key_values,
