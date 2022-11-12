@@ -9,7 +9,7 @@ trainer:
   output_dir: /w/exp/mkt/reward_1.7B_BI_MT_02
   num_train_epochs: 3
   
-  learning_rate: 0.0001
+  learning_rate: 0.0000008
   lr_scheduler_type: cosine
   warmup_ratio: 0.1
   
@@ -17,7 +17,7 @@ trainer:
   per_device_eval_batch_size: 128
   
   evaluation_strategy: steps
-  eval_steps: 10
+  eval_steps: 5
   
   save_strategy: steps
   save_steps: 50
@@ -26,7 +26,7 @@ trainer:
   
   logging_strategy: steps
   logging_first_step: true
-  logging_steps: 2
+  logging_steps: 1
   
   report_to: wandb  
   deepspeed: configs/stage3.json

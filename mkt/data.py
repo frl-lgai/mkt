@@ -32,7 +32,7 @@ def load(data_dir="/w/data/mkt/kobaco", split=None, tokenizer=None, num_proc=8, 
     if tokenizer:
         dataset = dataset.map(
             tokenizing,
-            remove_columns=dataset['train'].column_names,
+            remove_columns=(dataset if split else dataset['train']).column_names,
             num_proc=num_proc,
             load_from_cache_file=True,
         )
@@ -95,7 +95,7 @@ def load_feedback(data_dir="/w/mkt/data/kobaco", split=None, tokenizer=None, num
         }
     )
 
-    dataset = dataset.shuffle(seed=42)
+    #dataset = dataset.shuffle(seed=42)
 
     def tokenizing(example):
         pos_example = f"{example['input'].strip()} {example['pos_label'].strip()}[EOS]\n"
@@ -113,7 +113,7 @@ def load_feedback(data_dir="/w/mkt/data/kobaco", split=None, tokenizer=None, num
 
     dataset = dataset.map(
         tokenizing,
-        remove_columns=dataset['train'].column_names,
+        remove_columns=(dataset if split else dataset['train']).column_names,
         num_proc=num_proc,
         load_from_cache_file=True,
     )

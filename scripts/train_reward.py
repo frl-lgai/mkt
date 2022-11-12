@@ -35,7 +35,11 @@ def padding_for_comparisons(batch, tokenizer, padding='longest'):
 
 def compute_accuracy(eval_preds: EvalPrediction):
     logits_pos, logits_neg = eval_preds.predictions
-    return {"accuracy": np.mean(logits_pos > logits_neg)}
+    return {
+        "accuracy": np.mean(logits_pos > logits_neg),
+        "logit_pos": np.mean(logits_pos),
+        "logit_neg": np.mean(logits_neg),
+    }
 
 
 def main(cfg):
@@ -56,7 +60,7 @@ def main(cfg):
     model.config.pad_token_id = model.config.eos_token_id
     model.resize_token_embeddings(len(tokenizer))
 
-    dataset = data.load_feedback(cfg.data_dir, tokenizer=tokenizer, num_pr c=cfg.num_proc)
+    dataset = data.load_feedback(cfg.data_dir, tokenizer=tokenizer, num_proc=cfg.num_proc)
     dataset = dataset.with_format('torch')
 
     trainer = Trainer(
@@ -88,7 +92,7 @@ if __name__ == '__main__':
     parser = deepspeed.add_config_arguments(parser)
     args = parser.parse_args()
     
-    cfg = config.load(args.config, config.FinetuneConfig)
+    cfg = config.load(args.config)#, config.RewardConfig)
     cfg.local_rank = args.local_rank
     
     main(cfg)

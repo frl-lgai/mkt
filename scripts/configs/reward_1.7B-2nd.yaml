@@ -1,0 +1,40 @@
+seed: 42
+model_name_or_path: /w/exp/mkt/model_1.7B_BI_MT_02-2nd/checkpoint-100
+data_dir: /w/mkt/data/kobaco/comparisons_no_shuffle
+max_length: 1024
+num_proc: 1
+
+trainer:
+  output_dir: /w/exp/mkt/reward_1.7B_BI_MT_02-2nd
+  num_train_epochs: 1
+  
+  optim: adamw_torch
+  learning_rate: 0.000001
+  lr_scheduler_type: cosine
+  weight_decay: 0.01
+  warmup_ratio: 0.0
+  
+  per_device_train_batch_size: 128
+  per_device_eval_batch_size: 128
+  
+  evaluation_strategy: steps
+  eval_steps: 5
+  
+  save_strategy: steps
+  save_steps: 1000
+  
+  load_best_model_at_end: true
+  metric_for_best_model: accuracy
+  greater_is_better: true
+  
+  logging_strategy: steps
+  logging_first_step: true
+  logging_steps: 1
+  
+  report_to: wandb
+  deepspeed: configs/stage3.json
+
+wandb:
+  group: reward-1.7B-lr_${trainer.learning_rate}
+  project: mkt
+  entity: frl-lgai
